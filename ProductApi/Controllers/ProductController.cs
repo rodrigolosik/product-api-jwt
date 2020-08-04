@@ -28,7 +28,7 @@ namespace ProductApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Product product)
+        public async Task<IActionResult> Post([FromBody] Product product)
         {
             if (product != null)
             {
@@ -38,6 +38,34 @@ namespace ProductApi.Controllers
             }
             else
                 return BadRequest();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] int id, Product product)
+        {
+            var p = await _repo.GetProduct(id);
+
+            if (p == null)
+                return NotFound();
+
+            _repo.Update(product);
+            await _repo.SaveChangesAsync();
+
+            return Ok(product);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromBody] int id)
+        {
+            var product = await _repo.GetProduct(id);
+
+            if (product == null)
+                return NotFound();
+
+            _repo.Delete(product);
+            await _repo.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
