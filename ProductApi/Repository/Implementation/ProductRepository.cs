@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductApi.Data;
 using ProductApi.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,7 +32,7 @@ namespace ProductApi.Repository.Implementation
 
         public async Task<IEnumerable<Product>> ListProducts()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.AsNoTracking().ToListAsync();
         }
 
         public async Task<bool> SaveChangesAsync()
@@ -43,7 +42,7 @@ namespace ProductApi.Repository.Implementation
 
         public void Update(Product product)
         {
-            throw new NotImplementedException();
+            _context.Update(product);
         }
     }
 }
