@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductApi.Models;
 using ProductApi.Repository;
 using System.Threading.Tasks;
@@ -15,12 +16,15 @@ namespace ProductApi.Controllers
         {
             _repo = repo;
         }
-
+        
+        [Authorize]
         public async Task<IActionResult> Get()
         {
             return Ok(await _repo.ListProducts());
         }
 
+
+        [Authorize]
         [Route("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -28,7 +32,8 @@ namespace ProductApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Product product)
+        [Authorize]
+        public async Task<IActionResult> Post([FromBody] Product product)
         {
             if (product != null)
             {
@@ -38,6 +43,34 @@ namespace ProductApi.Controllers
             }
             else
                 return BadRequest();
+        }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] Product product)
+        {
+            if(!ModelState.IsValid)
+                return BadRequest();
+
+            _repo.Update(product);
+            await _repo.SaveChangesAsync();
+
+            return Ok(product);
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var product = await _repo.GetProduct(id);
+
+            if (product == null)
+                return NotFound();
+
+            _repo.Delete(product);
+            await _repo.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
