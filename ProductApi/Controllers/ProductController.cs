@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductApi.Models;
 using ProductApi.Repository;
 using System.Threading.Tasks;
@@ -15,12 +16,15 @@ namespace ProductApi.Controllers
         {
             _repo = repo;
         }
-
+        
+        [Authorize]
         public async Task<IActionResult> Get()
         {
             return Ok(await _repo.ListProducts());
         }
 
+
+        [Authorize]
         [Route("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -28,6 +32,7 @@ namespace ProductApi.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] Product product)
         {
             if (product != null)
@@ -40,6 +45,7 @@ namespace ProductApi.Controllers
                 return BadRequest();
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Product product)
         {
@@ -52,6 +58,7 @@ namespace ProductApi.Controllers
             return Ok(product);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

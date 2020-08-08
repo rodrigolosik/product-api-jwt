@@ -22,7 +22,7 @@ namespace ProductApi.Controllers
         [Route("login")]
         public async Task<IActionResult> Auth([FromBody] User model)
         {
-            var user = await _repo.GetUser(model.UserName, model.Password);
+            var user = await _repo.GetUser(model.UserName, UserService.GeneratePassword(model.Password));
 
             if (user == null)
                 return NotFound(new { message = "Usuário ou senha inválidos" });
@@ -80,26 +80,5 @@ namespace ProductApi.Controllers
 
             return Ok();
         }
-
-
-        [HttpGet]
-        [Route("anonymous")]
-        [AllowAnonymous]
-        public string Anonymous() => "Anônimo";
-
-        [HttpGet]
-        [Route("authenticated")]
-        [Authorize]
-        public string Authenticated() => string.Format("Autenticado - {0}", User.Identity.Name);
-
-        [HttpGet]
-        [Route("employee")]
-        [Authorize(Roles = "employee,manager")]
-        public string Employee() => "Funcionário";
-
-        [HttpGet]
-        [Route("manager")]
-        [Authorize(Roles = "manager")]
-        public string Manager() => "Gerente";
     }
 }
